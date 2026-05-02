@@ -7,7 +7,7 @@ s.bind(("virbr3", 0))
 
 # Headers in HEX format. Long form b'/x45/x00/x...' 
 ether_header = '525400a2c384525400ba86af0800'
-ip_header = '4500003cfbd440004006a993c0a80a01c0a80a02'
+ip_header = '45000014fbd440004006a993c0a80a01c0a80a02'
 
 packet = bytes.fromhex(ether_header + ip_header)
 s.send(packet)
