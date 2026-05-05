@@ -1,55 +1,64 @@
 from checksum_calculator import calculate_checksum
-
-def hexify(ip_addr: list):
-    ip_hex = [f"{int(octet):02x}" for octet in ip_addr.split(".")]
-    return ip_hex
+from hex_functions import BB, BBBB, BBBBIP, N, B, hexify
 
 ### TCP Header ###
-tcp_src_port = 45870
-tcp_dst_port = 22
-tcp_seq = 1921828437
-tcp_ack = 0
+
 #tcp_options = {}
-tcp_reserved = 0b0000
-tcp_flags = {
-            'CWR': 0b10000000,
-            'ECN': 0b01000000,
-            'URG': 0b00100000,
-            'ACK': 0b00010000,
-            'PSH': 0b00001000,
-            'RST': 0b00000100,
-            'SYN': 0b00000010,
-            'FIN': 0b00000001,}
-
-# [ Data Offset ][ Reserved + Flags ]. Field bits concatenated.
+tcp_opts_len = 0
+# [ Data Offset ][ Reserved + Flags ]
 #       4 bits          12 bits
-
-tcp_header_len = 0b0101 # Header only. 5 x 4 = 20 bytes
-flags = tcp_flags['RST']
-tcp_window = 0
-tcp_urg_pointer = 0
-doffset_rsrvd_flgs = (tcp_header_len << 12) | tcp_flags['RST']
-tcp_checksum = 0
+words = (20 + tcp_opts_len) // 4
+doff_rsrvd_flags = words << 12
 
 # IP Pseudo-header
-ip_src = "192.168.10.1"
-ip_dst = "192.168.10.2"
-reserved = "00"
-proto = 6
-tcp_len = 20 # Header only
+pseudo_header = {
+    'ip_src': "192.168.10.1",
+    'ip_dst': "192.168.10.2",
+    'reserved': 0,
+    'proto': 6,
+    'tcp_len': 20, # Header only
+    }
 
-pseudo_header = "".join(hexify(ip_src)) + "".join(hexify(ip_dst)) + f"{0:02x}" + f"{proto:02x}" + f"{tcp_len:04x}"
+pseudo_funcs = [BBBBIP, BBBBIP, B, B, BB]
+pseudo_header_x = hexify(pseudo_funcs, pseudo_header)
 
-tcp_header = [
-    f"{tcp_src_port:04x}", f"{tcp_dst_port:04x}",
-    f"{tcp_seq:08x}",
-    f"{tcp_ack:08x}",
-    f"{doffset_rsrvd_flgs:04x}", f"{tcp_window:04x}",
-    f"{tcp_checksum:04x}", f"{tcp_urg_pointer:04x}",
-    ]
+tcp_header = {
+    'src_port': 80,
+    'dst_port': 45871,
+    'seq_num': 0,
+    'ack_num': 1921828432,
+    'doffset': 0,
+    'rsrvd': 0,
+    'flags': ['RST', 'ACK'],
+    'doff_rsrvd_flags': 0,
+    'window': 0,
+    'checksum': 0,
+    'urg_ptr': 0,
+    }
 
-tcp_checksum = calculate_checksum(bytes.fromhex(pseudo_header + "".join(tcp_header)))
-tcp_header[6] = f"{tcp_checksum:04x}"
+tcp_flags = {
+    'CWR': 0b10000000,
+    'ECN': 0b01000000,
+    'URG': 0b00100000,
+    'ACK': 0b00010000,
+    'PSH': 0b00001000,
+    'RST': 0b00000100,
+    'SYN': 0b00000010,
+    'FIN': 0b00000001,
+    }
 
-print(tcp_header)
+
+for i in tcp_header['flags']:
+    doff_rsrvd_flags |= tcp_flags[i]
+
+tcp_header['doff_rsrvd_flags'] = doff_rsrvd_flags
+tcp_header['doffset'] = words
+
+hex_funcs = [BB, BB, BBBB, BBBB, N, N, N, BB, BB, BB, BB]
+tcp_header_x = hexify(hex_funcs, tcp_header)
+
+tcp_checksum = calculate_checksum(bytes.fromhex("".join(pseudo_header_x) + "".join(tcp_header_x)))
+tcp_header_x[6] = f"{tcp_checksum:04x}"
+
+#print("".join(tcp_header_x))
 
