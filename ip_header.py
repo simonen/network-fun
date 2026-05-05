@@ -1,5 +1,5 @@
 from checksum_calculator import calculate_checksum
-from hex_functions import ip_header_hex, BB, BBBB, BBBBIP
+from hex_functions import N, B, BB, BBBBIP, hexify
 
 
 ### IPv4 HEADER ###
@@ -36,15 +36,7 @@ header = {
     "ip_dst": "192.168.10.2",
     }
 
-ip_header_x = ip_header_hex(header)
-
-# print("Header: ", ip_header_x)
-# print("Header: ", "".join(ip_header_x))
-# print("Header: ", len("".join(ip_header_x)) // 2)
-
+hex_funcs = [N, N, B, B, BB, BB, N, N, BB, B, B, BB, BBBBIP, BBBBIP]
+ip_header_x = hexify(hex_funcs, header)
 ip_checksum = calculate_checksum(bytes.fromhex("".join(ip_header_x)))
-# print(ip_checksum)
 ip_header_x[7] = f"{ip_checksum:04x}"
-# print(ip_header_x)
-#print("".join(ip_header_x))
-
