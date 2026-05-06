@@ -1,4 +1,4 @@
-from hex_functions import BB, S, hexify, BBBBIP, B
+from hex_functions import header_hex
 from checksum_calculator import calculate_checksum
 
 ### UDP Header ###
@@ -11,7 +11,7 @@ udp_header = {
     "data": "Hello"
 }
 
-u_data_len = len(S(udp_header['data'])) // 2
+u_data_len = len(udp_header["data"].encode().hex()) // 2
 udp_header['len'] += u_data_len
 
 pseudo_header = {
@@ -19,13 +19,10 @@ pseudo_header = {
     'ip_dst': '192.168.10.2',
     'rsrvd': 0,
     'proto': 17,
-    'len': udp_header['len']
+    'len': 13
 }
 
-
-hex_funcs = [BB, BB, BB, BB, S]
-udp_header_x = hexify(hex_funcs, udp_header)
-pseudo_funcs = [BBBBIP, BBBBIP, B, B, BB]
-pseudo_header_x = hexify(pseudo_funcs, pseudo_header)
+udp_header_x = header_hex(udp_header, 'BB', 'BB', 'BB', 'BB', 'S')
+pseudo_header_x = header_hex(pseudo_header, 'BBBB_IP', 'BBBB_IP', 'B', 'B', 'BB')
 u_checksum = calculate_checksum(bytes.fromhex("".join(pseudo_header_x) + "".join(udp_header_x)))
-udp_header_x[3] = BB(u_checksum)
+udp_header_x[3] = f"{u_checksum:02x}"

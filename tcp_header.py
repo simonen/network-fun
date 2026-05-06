@@ -1,5 +1,5 @@
 from checksum_calculator import calculate_checksum
-from hex_functions import BB, BBBB, BBBBIP, N, B, hexify
+from hex_functions import header_hex
 
 ### TCP Header ###
 
@@ -19,8 +19,7 @@ pseudo_header = {
     'tcp_len': 20, # Header only
     }
 
-pseudo_funcs = [BBBBIP, BBBBIP, B, B, BB]
-pseudo_header_x = hexify(pseudo_funcs, pseudo_header)
+pseudo_header_x = header_hex(pseudo_header, "BBBB_IP", "BBBB_IP", "B", "B", "BB")
 
 tcp_header = {
     'src_port': 80,
@@ -54,8 +53,7 @@ for i in tcp_header['flags']:
 tcp_header['doff_rsrvd_flags'] = doff_rsrvd_flags
 tcp_header['doffset'] = words
 
-hex_funcs = [BB, BB, BBBB, BBBB, N, N, N, BB, BB, BB, BB]
-tcp_header_x = hexify(hex_funcs, tcp_header)
+tcp_header_x = header_hex(tcp_header, 'BB', 'BB', 'BBBB', 'BBBB', 'N', 'N', 'N', 'BB', 'BB', 'BB', 'BB')
 
 tcp_checksum = calculate_checksum(bytes.fromhex("".join(pseudo_header_x) + "".join(tcp_header_x)))
 tcp_header_x[6] = f"{tcp_checksum:04x}"
