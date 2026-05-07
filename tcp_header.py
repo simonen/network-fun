@@ -19,7 +19,7 @@ pseudo_header = {
     'tcp_len': 20, # Header only
     }
 
-pseudo_header_x = header_hex(pseudo_header, "BBBB_IP", "BBBB_IP", "B", "B", "BB")
+pseudo_header_x = header_hex(pseudo_header, "XXXX_IP", "XXXX_IP", "X", "X", "XX")
 
 tcp_header = {
     'src_port': 80,
@@ -53,7 +53,7 @@ for i in tcp_header['flags']:
 tcp_header['doff_rsrvd_flags'] = doff_rsrvd_flags
 tcp_header['doffset'] = words
 
-tcp_header_x = header_hex(tcp_header, 'BB', 'BB', 'BBBB', 'BBBB', 'N', 'N', 'N', 'BB', 'BB', 'BB', 'BB')
+tcp_header_x = header_hex(tcp_header, 'XX', 'XX', 'XXXX', 'XXXX', 'N', 'N', 'N', 'XX', 'XX', 'XX', 'XX')
 
 tcp_checksum = calculate_checksum(bytes.fromhex("".join(pseudo_header_x) + "".join(tcp_header_x)))
 tcp_header_x[6] = f"{tcp_checksum:04x}"
