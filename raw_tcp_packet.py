@@ -5,7 +5,7 @@ from ether_header import ether_header_x
 from udp_header import udp_header_x
 
 
-IFACE = 'virbr3'
+IFACE = 'eth0'
 
 s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
 s.bind((IFACE, 0))
@@ -15,7 +15,6 @@ s.bind((IFACE, 0))
 
 #packet = bytes.fromhex("".join(ether_header_x) + "".join(ip_header_x) + "".join(tcp_header_x))
 transport_header_x = udp_header_x
-app = "7b8b0100000100000000000007796f75747562652e636f6d00"
 packet = bytes.fromhex("".join(ether_header_x) + "".join(ip_header_x) + "".join(transport_header_x))
 
 print(packet, len(packet))

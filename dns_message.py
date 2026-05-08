@@ -1,8 +1,9 @@
 from hex_functions import header_hex, bin_conv, hex_conv
+import random
 
 bin_matrix = ['B', 'BBBB', 'B', 'B', 'B', 'B', 'BBB', 'BBBB']
 
-dns_id = 31627
+dns_id = random.randint(41000, 65530)
 dns_qr = 0
 dns_opcode = 0
 dns_aa = 0
@@ -27,11 +28,11 @@ counts = {
 count_matrix = ['XX', 'XX', 'XX', 'XX']
 count_x = header_hex(counts, *count_matrix)
 print(bin_flags)
-dns_flagz = f"{int("".join(bin_flags), 2):04x}"
+dns_flagz = f"{int(''.join(bin_flags), 2):04x}"
 print("flagz ", dns_flagz)
 print(count_x)
 
-host = '4ugunis.tan.'.split(".")
+host = 'youtube.com.'.split(".")
 query = []
 for label in host:
     query.append(len(label))
@@ -50,4 +51,4 @@ dns_class = "0001"
 
 dns_header_x = f"{dns_id:04x}" + dns_flagz + ''.join(count_x) + "".join(query_x) + dns_qtype + dns_class
 print(dns_header_x)
-
+print("dns_id: ", dns_id)
